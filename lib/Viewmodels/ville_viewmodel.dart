@@ -24,10 +24,7 @@ Ville? get villeSelectionnee => _villeSelectionnee;
 
 VilleViewModel() {
 
-_initialiser();
-
-}
-
+_initialiser();}
 
 void _initialiser() {
 
@@ -45,6 +42,9 @@ condition:'Nuageux', humidite:80),
 Ville(nom:'bidjan', pays:'CI', temperature:27,
 condition:'Pluvieux', humidite:85),
 
+//EXERCICE 8
+Ville(nom: 'Niamey', pays: 'Niger', temperature: 38, condition: 'Orageux', humidite: 40),
+Ville(nom: 'Lome', pays: 'Togo', temperature: 30, condition: 'Ventueux', humidite: 70),
 ];
 
 _villeSelectionnee = _villes.first;
@@ -63,6 +63,12 @@ _villeSelectionnee = ville;
 notifyListeners();
 
 }
+
+// Ajouter une nouvelle ville (Exercice C)
+  void ajouterVille(Ville ville) {
+    _villes.add(ville);
+    notifyListeners();
+  }
 
 }
 

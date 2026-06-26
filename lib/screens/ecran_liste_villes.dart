@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../viewmodels/ville_viewmodel.dart';
+import 'ecran_ajout_ville.dart';
 
 
 class EcranListeVilles extends StatelessWidget {
@@ -31,6 +32,7 @@ class EcranListeVilles extends StatelessWidget {
 
 
       body: ListView.builder(
+        
 
 
         itemCount: vm.villes.length,
@@ -124,9 +126,20 @@ class EcranListeVilles extends StatelessWidget {
         },
 
       ),
-
+        
+        floatingActionButton: FloatingActionButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => EcranAjoutVille()),
+    );
+  },
+  child: Icon(Icons.add),
+),
     );
 
+
   }
+  
 
 }

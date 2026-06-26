@@ -32,8 +32,16 @@ class EcranAccueil extends StatelessWidget {
       default:
         return Icons.wb_cloudy;
     }
+    
   }
-
+Color _couleurFond(String condition) {
+  switch (condition) {
+    case 'Ensoleille': return Colors.orange[100]!;
+    case 'Nuageux': return Colors.grey[300]!;
+    case 'Pluvieux': return Colors.blue[100]!;
+    default: return Colors.white;
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +65,18 @@ class EcranAccueil extends StatelessWidget {
       ),
 
 
-      body: ville == null
-
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-
-
-          : Column(
-
-              mainAxisAlignment: MainAxisAlignment.center,
-
-              children: [
+     body: ville == null
+    ? Center(child: CircularProgressIndicator())
+    : Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: _couleurFond(ville.condition),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            
 
 
                 Icon(
@@ -163,7 +171,8 @@ class EcranAccueil extends StatelessWidget {
 
             ),
 
-    );
+    ),
+   ); 
 
   }
 
