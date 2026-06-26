@@ -1,8 +1,7 @@
-import 'package:appmeteo/Models/ville.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/ville_viewmodel.dart';
-import '../models/ville.dart' hide Ville;
+import '../models/ville.dart';
 
 class EcranAjoutVille extends StatefulWidget {
   const EcranAjoutVille({super.key});
@@ -51,55 +50,4 @@ class _EcranAjoutVilleState extends State<EcranAjoutVille> {
                 controller: _paysController,
                 decoration: InputDecoration(labelText: 'Pays'),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Champ requis' : null,
-              ),
-              TextFormField(
-                controller: _temperatureController,
-                decoration: InputDecoration(labelText: 'Temperature (C)'),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Champ requis' : null,
-              ),
-              TextFormField(
-                controller: _humiditeController,
-                decoration: InputDecoration(labelText: 'Humidite (%)'),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Champ requis' : null,
-              ),
-              DropdownButtonFormField<String>(
-                value: _conditionChoisie,
-                decoration: InputDecoration(labelText: 'Condition'),
-                items: _conditions
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _conditionChoisie = value!;
-                  });
-                },
-              ),
-              SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    final nouvelleVille = Ville(
-                      nom: _nomController.text,
-                      pays: _paysController.text,
-                      temperature: double.parse(_temperatureController.text),
-                      condition: _conditionChoisie,
-                      humidite: int.parse(_humiditeController.text),
-                    );
-                    context.read<VilleViewModel>().ajouterVille(nouvelleVille as Ville);
-                    Navigator.pop(context);
-                  }
-                },
-                child: Text('Valider'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+                    value == null || value.isEmpty ?
