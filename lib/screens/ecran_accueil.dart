@@ -22,158 +22,311 @@ class EcranAccueil extends StatelessWidget {
 
       case 'Pluvieux':
         return Icons.umbrella;
-        //Exercice 8
-      case'Orageux':
-       return Icons.thunderstorm;
-       case 'Venteux':
-      return Icons.air;
-      //Fin d'exercice
+
+      case 'Orageux':
+        return Icons.thunderstorm;
+
+      case 'Venteux':
+        return Icons.air;
 
       default:
         return Icons.wb_cloudy;
-    }
-    
+   }
   }
+
+
 Color _couleurFond(String condition) {
-  switch (condition) {
-    case 'Ensoleille': return Colors.orange[100]!;
-    case 'Nuageux': return Colors.grey[300]!;
-    case 'Pluvieux': return Colors.blue[100]!;
-    default: return Colors.white;
+
+  switch(condition){
+
+    case 'Ensoleille':
+      return Colors.orange[100]!;
+
+    case 'Nuageux':
+      return Colors.grey[300]!;
+
+    case 'Pluvieux':
+      return Colors.blue[100]!;
+
+    default:
+      return Colors.white;
   }
+
 }
 
-  @override
-  Widget build(BuildContext context) {
 
 
-    final vm = context.watch<VilleViewModel>();
+@override
+Widget build(BuildContext context) {
 
-    final ville = vm.villeSelectionnee;
 
+final vm = context.watch<VilleViewModel>();
 
-    return Scaffold(
+final ville = vm.villeSelectionnee;
 
-      appBar: AppBar(
 
-        title: const Text('AppMeteo'),
 
-        backgroundColor: Colors.blue,
+return Scaffold(
 
-        foregroundColor: Colors.white,
+appBar: AppBar(
 
-      ),
+title: const Text('AppMeteo'),
 
+backgroundColor: Colors.blue,
 
-     body: ville == null
-    ? Center(child: CircularProgressIndicator())
-    : Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          color: _couleurFond(ville.condition),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            
+foregroundColor: Colors.white,
 
+),
 
-                Icon(
 
-                  _iconeMeteo(ville.condition),
 
-                  size: 100,
+body: ville == null
 
-                  color: Colors.orange,
+? const Center(child: CircularProgressIndicator())
 
-                ),
 
+: Container(
 
-                const SizedBox(height: 20),
+width: double.infinity,
 
+height: double.infinity,
 
-                Text(
+decoration: BoxDecoration(
 
-                  '${ville.temperature.toStringAsFixed(0)} C',
+color: _couleurFond(ville.condition),
 
-                  style: const TextStyle(
+),
 
-                    fontSize: 60,
 
-                    fontWeight: FontWeight.bold,
+child: Column(
 
-                  ),
+mainAxisAlignment: MainAxisAlignment.center,
 
-                ),
 
+children: [
 
-                Text(
 
-                  ville.nom,
 
-                  style: TextStyle(
+// ICON METEO
 
-                    fontSize: 28,
+Icon(
 
-                    color: Colors.grey[700],
+_iconeMeteo(ville.condition),
 
-                  ),
+size: 100,
 
-                ),
+color: Colors.orange,
 
+),
 
-                Text(
 
-                  '${ville.condition} - Humidite : ${ville.humidite}%',
 
-                  style: TextStyle(
+const SizedBox(height: 20),
 
-                    fontSize: 16,
 
-                    color: Colors.grey[600],
 
-                  ),
+// DONNEES REELLES METEO
 
-                ),
+Consumer<VilleViewModel>(
 
+builder: (context, vm, _) {
 
-                const SizedBox(height: 30),
 
 
-                ElevatedButton.icon(
+if(vm.chargement){
 
-                  icon: const Icon(Icons.list),
+return const CircularProgressIndicator();
 
-                  label: const Text('Changer de ville'),
+}
 
 
-                  onPressed: () {
 
+if(vm.erreur != null){
 
-                    Navigator.push(
 
-                      context,
+return Column(
 
-                      MaterialPageRoute(
+children: [
 
-                        builder: (context) => const EcranListeVilles(),
 
-                      ),
+const Icon(
 
-                    );
+Icons.wifi_off,
 
-                  },
+size: 60,
 
-                ),
+color: Colors.red,
 
-              ],
+),
 
-            ),
 
-    ),
-   ); 
+Text(
 
-  }
+vm.erreur!,
+
+style: const TextStyle(
+
+color: Colors.red
+
+),
+
+),
+
+
+
+ElevatedButton(
+
+onPressed: (){
+
+vm.selectionnerVille(
+
+vm.villeSelectionnee!
+
+);
+
+},
+
+
+child: const Text(
+
+'Réessayer'
+
+),
+
+)
+
+
+
+],
+
+);
+
+}
+
+
+
+
+final meteo = vm.meteoActuelle;
+
+
+
+if(meteo == null){
+
+return const Text(
+
+'Chargement...'
+
+);
+
+}
+
+
+
+
+return Column(
+
+children: [
+
+
+
+Text(
+
+'${meteo.temperature.toStringAsFixed(1)} C',
+
+style: const TextStyle(
+
+fontSize: 60,
+
+fontWeight: FontWeight.bold,
+
+),
+
+),
+
+
+Text(
+
+'${meteo.conditionTexte} - ${meteo.humidite}% humidité',
+
+style: TextStyle(
+
+fontSize: 16,
+
+color: Colors.grey[600],
+
+),
+
+),
+
+
+
+],
+
+
+);
+
+
+},
+
+
+),
+
+
+
+const SizedBox(height:30),
+
+
+
+
+ElevatedButton.icon(
+
+
+icon: const Icon(Icons.list),
+
+
+label: const Text(
+
+'Changer de ville'
+
+),
+
+
+
+onPressed: (){
+
+
+Navigator.push(
+
+context,
+
+MaterialPageRoute(
+
+builder: (context)=> const EcranListeVilles(),
+
+),
+
+);
+
+
+},
+
+
+),
+
+
+
+],
+
+),
+
+),
+
+
+
+);
+
+
+}
+
 
 }
