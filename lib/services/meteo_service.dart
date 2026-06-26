@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../models/meteo_data.dart'; 
+import '../Models/meteo_data.dart'; 
 
 class MeteoService { 
   // Coordonnees GPS des villes 

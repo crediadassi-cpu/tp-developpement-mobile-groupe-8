@@ -124,7 +124,6 @@ color: Colors.orange,
 const SizedBox(height: 20),
 
 
-
 // DONNEES REELLES METEO
 
 Consumer<VilleViewModel>(

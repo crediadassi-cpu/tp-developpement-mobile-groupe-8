@@ -24,6 +24,4 @@ class MeteoData {
     if (weatherCode >= 80 && weatherCode <= 82) return 'Averses' ; 
     if (weatherCode >= 95) return 'Orageux'; 
     return 'Variable'; 
-  } 
-  
-}
+  } }
