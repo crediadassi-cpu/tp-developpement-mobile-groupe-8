@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/ville.dart';
+import '../services/meteo_service.dart';
+import '../models/meteo_data.dart';
 
 
 class VilleViewModel extends ChangeNotifier {
@@ -12,12 +14,22 @@ List<Ville> _villes = [];
 
 Ville? _villeSelectionnee;
 
+// --- Ajouts pour la meteo via API ---
+final MeteoService _meteoService = MeteoService();
+MeteoData? _meteoActuelle;
+bool _chargement = false;
+String? _erreur;
+
 
 // Getters (la View lit ces proprietes)
 
 List<Ville> get villes => _villes;
 
 Ville? get villeSelectionnee => _villeSelectionnee;
+
+MeteoData? get meteoActuelle => _meteoActuelle;
+bool get chargement => _chargement;
+String? get erreur => _erreur;
 
 
 // Constructeur : charger des donnees au demarrage
@@ -54,12 +66,24 @@ notifyListeners(); // prevenir les widgets
 }
 
 
-// Changer la ville affichee
+// Changer la ville affichee + charger la vraie meteo depuis l'API
 
-void selectionnerVille(Ville ville) {
+Future<void> selectionnerVille(Ville ville) async {
 
 _villeSelectionnee = ville;
+_chargement = true;
+_erreur = null;
+notifyListeners();
 
+final meteo = await _meteoService.getMeteo(ville.nom);
+
+if (meteo != null) {
+  _meteoActuelle = meteo;
+} else {
+  _erreur = 'Impossible de charger la meteo';
+}
+
+_chargement = false;
 notifyListeners();
 
 }
@@ -69,6 +93,5 @@ notifyListeners();
     _villes.add(ville);
     notifyListeners();
   }
-
+  
 }
-
