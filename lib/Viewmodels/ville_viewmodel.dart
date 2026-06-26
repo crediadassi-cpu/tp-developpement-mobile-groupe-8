@@ -78,7 +78,9 @@ notifyListeners();
 final meteo = await _meteoService.getMeteo(ville.nom);
 
 if (meteo != null) {
-  _meteoActuelle =meteo as MeteoData?;
+
+  _meteoActuelle = meteo;
+
 } else {
   _erreur = 'Impossible de charger la meteo';
 }

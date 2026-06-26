@@ -1,53 +1,195 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../viewmodels/ville_viewmodel.dart';
-import '../models/ville.dart';
+import '../Models/ville.dart';
+
 
 class EcranAjoutVille extends StatefulWidget {
+
   const EcranAjoutVille({super.key});
+
 
   @override
   State<EcranAjoutVille> createState() => _EcranAjoutVilleState();
+
 }
 
-class _EcranAjoutVilleState extends State<EcranAjoutVille> {
-  final _formKey = GlobalKey<FormState>();
-  final _nomController = TextEditingController();
-  final _paysController = TextEditingController();
-  final _temperatureController = TextEditingController();
-  final _humiditeController = TextEditingController();
-  String _conditionChoisie = 'Ensoleille';
 
-  final List<String> _conditions = [
-    'Ensoleille',
-    'Nuageux',
-    'Pluvieux',
-    'Orageux',
-    'Ventueux',
-  ];
+
+class _EcranAjoutVilleState extends State<EcranAjoutVille> {
+
+
+  final _formKey = GlobalKey<FormState>();
+
+
+  final TextEditingController _villeController =
+      TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
+
+
       appBar: AppBar(
-        title: Text('Ajouter une ville'),
+
+        title: const Text("Ajouter une ville"),
+
         backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+
       ),
+
+
+
       body: Padding(
-        padding: EdgeInsets.all(16),
+
+
+        padding: const EdgeInsets.all(20),
+
+
+
         child: Form(
+
+
           key: _formKey,
+
+
+
           child: ListView(
+
+
             children: [
+
+
+
               TextFormField(
-                controller: _nomController,
-                decoration: InputDecoration(labelText: 'Nom de la ville'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Champ requis' : null,
+
+
+                controller: _villeController,
+
+
+                decoration: const InputDecoration(
+
+                  labelText: "Nom de la ville",
+
+                  border: OutlineInputBorder(),
+
+                ),
+
+
+
+                validator: (value){
+
+
+                  if(value == null || value.isEmpty){
+
+
+                    return "Veuillez entrer une ville";
+
+
+                  }
+
+
+                  return null;
+
+
+                },
+
+
               ),
-              TextFormField(
-                controller: _paysController,
-                decoration: InputDecoration(labelText: 'Pays'),
-                validator: (value) =>
-                    value == null || value.isEmpty ?
+
+
+
+              const SizedBox(height:20),
+
+
+
+
+              ElevatedButton(
+
+
+                child: const Text(
+
+                  "Ajouter"
+
+                ),
+
+
+
+                onPressed: (){
+
+
+                  if(_formKey.currentState!.validate()){
+
+
+
+                    final vm = context.read<VilleViewModel>();
+
+
+
+                    vm.ajouterVille(
+
+
+                      Ville(
+
+
+                        nom: _villeController.text,
+
+
+                        pays: "Inconnu",
+
+
+                        temperature: 0,
+
+
+                        humidite: 0,
+
+
+                        condition: "Nuageux",
+
+
+                      )
+
+
+                    );
+
+
+
+
+                    Navigator.pop(context);
+
+
+
+                  }
+
+
+                },
+
+
+              )
+
+
+
+            ],
+
+
+          ),
+
+
+        ),
+
+
+      ),
+
+
+    );
+
+
+  }
+
+
+}
