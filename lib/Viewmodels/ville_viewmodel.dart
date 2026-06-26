@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-import '../models/ville.dart';
+import '../Models/ville.dart';
 import '../services/meteo_service.dart';
-import '../models/meteo_data.dart';
+import '../Models/meteo_data.dart';
 
 
 class VilleViewModel extends ChangeNotifier {
@@ -78,7 +78,7 @@ notifyListeners();
 final meteo = await _meteoService.getMeteo(ville.nom);
 
 if (meteo != null) {
-  _meteoActuelle = meteo;
+  _meteoActuelle =meteo as MeteoData?;
 } else {
   _erreur = 'Impossible de charger la meteo';
 }
@@ -93,5 +93,5 @@ notifyListeners();
     _villes.add(ville);
     notifyListeners();
   }
-  
+
 }

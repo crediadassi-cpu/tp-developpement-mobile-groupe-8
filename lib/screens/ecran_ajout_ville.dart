@@ -1,7 +1,8 @@
+import 'package:appmeteo/Models/ville.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/ville_viewmodel.dart';
-import '../models/ville.dart';
+import '../models/ville.dart' hide Ville;
 
 class EcranAjoutVille extends StatefulWidget {
   const EcranAjoutVille({super.key});
@@ -89,7 +90,7 @@ class _EcranAjoutVilleState extends State<EcranAjoutVille> {
                       condition: _conditionChoisie,
                       humidite: int.parse(_humiditeController.text),
                     );
-                    context.read<VilleViewModel>().ajouterVille(nouvelleVille);
+                    context.read<VilleViewModel>().ajouterVille(nouvelleVille as Ville);
                     Navigator.pop(context);
                   }
                 },

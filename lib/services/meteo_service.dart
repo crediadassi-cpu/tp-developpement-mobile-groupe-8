@@ -38,8 +38,7 @@ class MeteoService {
       final response = await _dio.get('/forecast', queryParameters: { 
          'latitude': coords[0], 
          'longitude': coords[1], 
-         'current': 
-         'temperature_2m,relative_humidity_2m, weathercode', 
+         'current':'temperature_2m,relative_humidity_2m,weathercode', 
          'timezone':
          'Africa/Lagos',
 
