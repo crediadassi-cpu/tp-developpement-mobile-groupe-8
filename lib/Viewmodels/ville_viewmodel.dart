@@ -1,99 +1,156 @@
 import 'package:flutter/foundation.dart';
-
-import '../Models/ville.dart';
+import '../models/ville.dart';
 import '../services/meteo_service.dart';
-import '../Models/meteo_data.dart';
-
+import '../models/meteo_data.dart';
+import '../services/notification_service.dart';
 
 class VilleViewModel extends ChangeNotifier {
+  List<Ville> _villes = [];
 
+  Ville? _villeSelectionnee;
 
-// La liste des villes disponibles
-List<Ville> _villes = [];
-// La ville actuellement selectionnee
+  final MeteoService _meteoService = MeteoService();
+  final NotificationService _notificationService = NotificationService();
 
-Ville? _villeSelectionnee;
+  final Map<String, (MeteoData, DateTime)> _cache = {};
 
-// --- Ajouts pour la meteo via API ---
-final MeteoService _meteoService = MeteoService();
-MeteoData? _meteoActuelle;
-bool _chargement = false;
-String? _erreur;
+  MeteoData? _meteoActuelle;
+  bool _chargement = false;
+  String? _erreur;
 
+  List<Ville> get villes => _villes;
+  Ville? get villeSelectionnee => _villeSelectionnee;
 
-// Getters (la View lit ces proprietes)
+  MeteoData? get meteoActuelle => _meteoActuelle;
+  bool get chargement => _chargement;
+  String? get erreur => _erreur;
 
-List<Ville> get villes => _villes;
+  VilleViewModel() {
+    _initialiser();
+  }
 
-Ville? get villeSelectionnee => _villeSelectionnee;
+  void _initialiser() {
+    _notificationService.init(); // ⭐ INITIALISATION NOTIFICATIONS
 
-MeteoData? get meteoActuelle => _meteoActuelle;
-bool get chargement => _chargement;
-String? get erreur => _erreur;
+    _villes = [
+      Ville(
+        nom: 'Cotonou',
+        pays: 'Benin',
+        temperature: 29,
+        condition: 'Ensoleille',
+        humidite: 75,
+      ),
+      Ville(
+        nom: 'Parakou',
+        
+        pays: 'Benin',
+        temperature: 32,
+        condition: 'Ensoleille',
+        humidite: 60,
+      ),
+      Ville(
+        nom: 'Lagos',
+        pays: 'Nigeria',
+        temperature: 31,
+        condition: 'Nuageux',
+        humidite: 80,
+      ),
+      Ville(
+        nom: 'Abidjan',
+        pays: 'CI',
+        temperature: 27,
+        condition: 'Pluvieux',
+        humidite: 85,
+      ),
+      Ville(
+        nom: 'Porto-Novo',
+        pays: 'Benin',
+        temperature: 28,
+        condition: 'Orageux',
+        humidite: 90,
+      ),
+      Ville(
+        nom: 'Natitingou',
+        pays: 'Benin',
+        temperature: 30,
+        condition: 'Venteux',
+        humidite: 55,
+      ),
+    ];
 
+    _villeSelectionnee = _villes.first;
 
-// Constructeur : charger des donnees au demarrage
+    notifyListeners();
+  }
 
-VilleViewModel() {
+  // ⭐ VERSION ASYNC (OBLIGATOIRE POUR NOTIFICATIONS)
+  Future<void> selectionnerVille(Ville ville) async {
+    _villeSelectionnee = ville;
 
-_initialiser();}
+    final cacheData = _cache[ville.nom];
 
-void _initialiser() {
+    // ⏱️ CACHE
+    if (cacheData != null) {
+      final meteoCache = cacheData.$1;
+      final dateCache = cacheData.$2;
 
-_villes = [
+      if (DateTime.now().difference(dateCache).inMinutes < 30) {
+        _meteoActuelle = meteoCache;
+        notifyListeners();
+        return;
+      }
+    }
 
-Ville(nom:'Cotonou', pays:'Benin', temperature:29,
-condition:'Ensoleille', humidite:75),
+    _chargement = true;
+    _erreur = null;
+    notifyListeners();
 
-Ville(nom:'Parakou', pays:'Benin', temperature:32,
-condition:'Ensoleille', humidite:60),
+    final meteo = await _meteoService.getMeteo(ville.nom);
 
-Ville(nom:'Lagos', pays:'Nigeria', temperature:31,
-condition:'Nuageux', humidite:80),
+    if (meteo != null) {
+      _meteoActuelle = meteo;
 
-Ville(nom:'bidjan', pays:'CI', temperature:27,
-condition:'Pluvieux', humidite:85),
+      // 💾 cache
+      _cache[ville.nom] = (meteo, DateTime.now());
 
-//EXERCICE 8
-Ville(nom: 'Niamey', pays: 'Niger', temperature: 38, condition: 'Orageux', humidite: 40),
-Ville(nom: 'Lome', pays: 'Togo', temperature: 30, condition: 'Ventueux', humidite: 70),
-];
+      // ⭐ NOTIFICATION ICI (IMPORTANT)
+      await _notificationService.showHighTempNotification(
+        meteo.temperature,
+        ville.nom,
+      );
+    } else {
+      _erreur = "Impossible de charger la météo";
+    }
 
-_villeSelectionnee = _villes.first;
+    _chargement = false;
+    notifyListeners();
+  }
 
-notifyListeners(); // prevenir les widgets
-
-}
-
-
-// Changer la ville affichee + charger la vraie meteo depuis l'API
-
-Future<void> selectionnerVille(Ville ville) async {
-
-_villeSelectionnee = ville;
-_chargement = true;
-_erreur = null;
-notifyListeners();
-
-final meteo = await _meteoService.getMeteo(ville.nom);
-
-if (meteo != null) {
-
-  _meteoActuelle = meteo;
-
-} else {
-  _erreur = 'Impossible de charger la meteo';
-}
-
-_chargement = false;
-notifyListeners();
-
-}
-
-// Ajouter une nouvelle ville (Exercice C)
   void ajouterVille(Ville ville) {
     _villes.add(ville);
     notifyListeners();
   }
 
+  void mettreAJourPhoto(String cheminPhoto) {
+    if (_villeSelectionnee == null) return;
+
+    final index = _villes.indexWhere((v) => v.nom == _villeSelectionnee!.nom);
+
+    if (index == -1) return;
+
+    _villes[index] = _villes[index].copierAvecPhoto(cheminPhoto);
+    _villeSelectionnee = _villes[index];
+
+    notifyListeners();
+  }
+
+  // ⭐ COORDONNÉES GPS
+  static const Map<String, List<double>> coords = {
+    'Cotonou': [6.3703, 2.3912],
+    'Parakou': [9.3370, 2.6283],
+    'Lagos': [6.4541, 3.3947],
+    'Abidjan': [5.3600, -4.0083],
+    'Porto-Novo': [6.4969, 2.6289],
+    'Natitingou': [10.3042, 1.3798],
+  };
 }
